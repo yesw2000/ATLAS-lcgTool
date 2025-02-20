@@ -137,7 +137,7 @@ context of that release.
     source lcgPkg.sh Python
     ```
 
-  *   Set up the environment for ROOT version 6.32.06 with gcc14:
+  * Set up the environment for ROOT version 6.32.06 with gcc14:
 
     ```
     source lcgPkg.sh ROOT 6.32.06,gcc14
@@ -155,10 +155,10 @@ context of that release.
     source lcgPkg.sh -d ROOT 6.30.02,gcc12
     ```
 
-  *   List all dependencies for a specific package:
+  * List all dependencies for a specific package:
 
     ```
-     source lcgPkg.sh -D ROOT 6.32.06,gcc14
+    source lcgPkg.sh -D ROOT 6.32.06,gcc14
     ```
 
     Output:
