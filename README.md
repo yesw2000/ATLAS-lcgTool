@@ -149,6 +149,23 @@ context of that release.
     source lcgPkg.sh julia LCG_107,gcc14
     ```
 
+  * Set up the environment for julia on top of main,Athena,latest
+    and compatible with the associated LCG release:
+
+    ```
+    asetup main,Athena,latest
+    source lcgPkg.sh julia
+    ```
+
+  * Set up the environment for julia on top of main,AnalysisBase,latest
+    with no associated LCG release:
+
+    ```
+    asetup main,Athena,latest
+    source lcgPkg.sh julia
+    source lcgPkg.sh julia,1.11.3
+    ```
+
   * Show the number of dependencies for a specific package:
 
     ```
