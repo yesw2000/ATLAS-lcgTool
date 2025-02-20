@@ -45,6 +45,8 @@ Usage:
   source lcgPkg.sh Python 3.11.9,gcc14,dbg  # set up the env of Python-3.11.9 with debug mode
   source lcgPkg.sh -d Python 3.11.9,gcc14   # Show dependency count
   source lcgPkg.sh -D ROOT 6.32.06,gcc14    # List all dependencies
+
+Visit https://github.com/yesw2000/ATLAS-lcgTool for more details.
 EOF
 }
 
