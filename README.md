@@ -22,6 +22,10 @@ your environment (e.g., within an **ATLAS** release).
   *  **Dependency Management:**  Provides options to count or list dependencies of a package.
   *  **LCG Release Awareness:** Integrates with LCG release conventions, ensuring compatibility when used within established environments.
   *  **Platform Detection:** Automatically detects the platform based on environment variables or user-specified arguments.
+  *  **Flexible Argument Delimiters:** The script accepts both commas and spaces as delimiters between arguments 
+     (e.g., `package version,compiler,opt` or `package version compiler opt`).
+  *  **Case-Insensitive Package Matching:** If a package name is not found exactly as typed, 
+     the script will attempt to find a matching package name in a case-insensitive manner.
 
 ## Usage
 
@@ -92,12 +96,21 @@ made by the script are applied to your current shell.
 
 ### Specifying Package and Version
 
-The script uses a comma-separated list of arguments to specify the package, version, and platform. The general format is:
+The script uses a combination of spaces and/or commas to delimit the arguments when specifying a package, version, and platform.
+The general format is:
 
 `source lcgPkg.sh <package_name> <version>,<compiler>,<optimization>`
 
+or
+
+`source lcgPkg.sh <package_name> <version> <compiler> <optimization>`
+
+or a combination of both.
+
    *  `<package_name>`:  The name of the package (e.g., `julia`, `Python`, `ROOT`).
-   *  `<version>`: The version of the package (e.g., `1.10.4`, `3.11.9`, `6.32.06`).  Can also be an LCG release (e.g. `LCG_107`).
+      The script performs a case-insensitive search if an exact match is not found.
+   *  `<version>`: The version of the package (e.g., `1.10.4`, `3.11.9`, `6.32.06`).
+      Can also be an LCG release (e.g. `LCG_107`).
    *  `<compiler>`: The compiler used to build the package (e.g., `gcc14`, `clang16`).
    *  `<optimization>`:  The optimization level (`opt` or `dbg`). Defaults to `opt` if not specified.
 
@@ -110,11 +123,12 @@ Platform information (OS, compiler, optimization) can be provided in several way
      if they are set.  This is the preferred method in many HEP environments.
 
 2. **Command-line Arguments:**  You can explicitly specify the platform as
-    a comma-separated list of arguments, as shown in the examples above.
-    For example: `source lcgPkg.sh Python 3.9.7,x86_64-el8-gcc11-opt`.
+     a space and/or comma-separated list of arguments, as shown in the examples
+     above.  For example: `source lcgPkg.sh Python 3.9.7,x86_64-el8-gcc11-opt` or
+     `source lcgPkg.sh Python 3.9.7 x86_64-el8-gcc11-opt`
 
-3.  **Mixing:** You can combine environment variables and command-line
-    arguments.  However, if there are conflicts, the script will report an error.
+3. **Mixing:** You can combine environment variables and command-line
+     arguments.  However, if there are conflicts, the script will report an error.
 
 ### LCG Releases
 
@@ -203,7 +217,7 @@ context of that release.
 
 The script includes error handling to check for:
 
-  *  Invalid package names
+  *  Invalid package names (it attempts a case-insensitive match).
   *  Incompatible platform specifications
   *  Missing dependencies
   *  Conflicts between environment variables and command-line arguments
