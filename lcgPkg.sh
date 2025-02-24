@@ -17,12 +17,26 @@ arch=$(uname -m)
 
 # Function to print the tool version
 print_version() {
-    local version="2025-02-20-r01"
+    local version="2025-02-24-r01"
     echo $version
+}
+
+# Function to check if lcgPkg function is defined and contains the correct path
+check_lcgpkg_function() {
+    # Check if function is defined
+    if type lcgPkg >/dev/null 2>&1; then
+        return 0
+    fi
+    return 1  # Function doesn't exist or doesn't contain the path
 }
 
 # Function to print the tool version
 print_help() {
+    local cmd="source lcgPkg.sh"
+    if check_lcgpkg_function; then
+        cmd="lcgPkg"
+    fi
+
     cat << EOF
 Description: This is a tool to list/set up packages under $sft_top.
              Platform info will be taken from the env variable BINARY_TAG/CMTCONFIG if defined.
@@ -36,15 +50,15 @@ Option:
       -D|--deps-list:  List all dependencies (up to 2 levels)
 
 Usage:
-  source lcgPkg.sh                      # list all available lcg packages
-  source lcgPkg.sh julia                # list versions for "julia"
-  source lcgPkg.sh Python clang         # list versions for clang-based "Python"
-  source lcgPkg.sh julia 1.10.4,gcc14   # set up the env of julia-1.10.4
-  source lcgPkg.sh julia LCG_107,gcc14  # set up the env of julia in the lcg release of LCG_107
-  source lcgPkg.sh Python 3.11.9,x86_64-el9-gcc14-opt  # set up the env of Python-3.11.9
-  source lcgPkg.sh Python 3.11.9,gcc14,dbg  # set up the env of Python-3.11.9 with debug mode
-  source lcgPkg.sh -d Python 3.11.9,gcc14   # Show dependency count
-  source lcgPkg.sh -D ROOT 6.32.06,gcc14    # List all dependencies
+  $cmd                      # list all available lcg packages
+  $cmd julia                # list versions for "julia"
+  $cmd Python clang         # list versions for clang-based "Python"
+  $cmd julia 1.10.4,gcc14   # set up the env of julia-1.10.4
+  $cmd julia LCG_107,gcc14  # set up the env of julia in the lcg release of LCG_107
+  $cmd Python 3.11.9,x86_64-el9-gcc14-opt  # set up the env of Python-3.11.9
+  $cmd Python 3.11.9,gcc14,dbg  # set up the env of Python-3.11.9 with debug mode
+  $cmd -d Python 3.11.9,gcc14   # Show dependency count
+  $cmd -D ROOT 6.32.06,gcc14    # List all dependencies
 
 Visit https://github.com/yesw2000/ATLAS-lcgTool for more details.
 EOF
@@ -94,6 +108,7 @@ list_packages() {
     fi
     # Add a final newline if the last row wasn't complete
     echo ""
+    echo -e "\nPlease specify one package name from the above list"
 }
 
 # Function to find the package name, ignoreing the case
@@ -598,8 +613,13 @@ main() {
             fi
         fi
     elif [[ -n "$version" ]]; then
+        # No package is given, the assigned $version is presumed to be un-recognized package name"
         echo "The package=$version is NOT available"
-        echo "Please run 'source lcgPkg.sh' to list available Packages"
+        local cmd="source lcgPkg.sh"
+        if check_lcgpkg_function; then
+            cmd="lcgPkg"
+        fi
+        echo "Please run '$cmd' to list available Packages"
         return 1
     else
         if [[ -n "$ext_path_atlas" ]]; then
