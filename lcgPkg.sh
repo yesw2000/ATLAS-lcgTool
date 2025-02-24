@@ -462,7 +462,6 @@ main() {
                 fi
 
                 # Get OS (always second element)
-                echo "os_source=$os_source; os_elem=$os_elem; os=$os"
                 if [[ "$os_elem" != "$os" && -n "$os_source" ]]; then
                     echo "Error: The input arg=$i conflicts with os=$os in other envvar/arg $os_source"
                     return 1
