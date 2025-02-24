@@ -304,6 +304,7 @@ setup_package_env() {
     local os=$3
     local compiler=$4
     local opt=${5:-opt}  # Default to "opt" if not provided
+    local check_deps=${6:1}  # New argument: 1 to check deps (default), 0 to skip
     local package_fullPaths
     local fullpath
 
@@ -347,15 +348,18 @@ setup_package_env() {
         fullpath=$(echo "$package_fullPaths" | head -n 1)
     fi
 
-    local n_depends=$(get_num_depends "$packageName" "$fullpath")
-    if [ $n_depends -gt 5 ]; then
-        local lcg_release=${fullpath#*/releases/}
-        lcg_release=${lcg_release%%/*}
-        local platform=$(basename "$fullpath")
-        echo "There are $n_depends (up to 2 levels) dependencies in $packageName"
-        echo "It is recommended to execute the following command next time to"
-        echo " set up the package, optimizing your PATH and LD_LIBRARY_PATH"
-        echo -e "\n\tlsetup" \"views $lcg_release $platform\" "\n"
+    # Check dependencies only if check_deps is 1
+    if [ "$check_deps" = "1" ]; then
+        local n_depends=$(get_num_depends "$packageName" "$fullpath")
+        if [ $n_depends -gt 5 ]; then
+            local lcg_release=${fullpath#*/releases/}
+            lcg_release=${lcg_release%%/*}
+            local platform=$(basename "$fullpath")
+            echo "There are $n_depends (up to 2 levels) dependencies in $packageName"
+            echo "It is recommended to execute the following command next time to"
+            echo " set up the package, optimizing your PATH and LD_LIBRARY_PATH"
+            echo -e "\n\tlsetup" \"views $lcg_release $platform\" "\n"
+        fi
     fi
     echo "Set up the $packageName env under $fullpath"
 
@@ -561,7 +565,7 @@ main() {
                 echo "Warning: Package $packageName is already set up in $ext_path_atlas/$packageName"
                 return 1
             elif [[ -n "$lcg_release" && -d "$sft_top/$lcg_release/$packageName" ]]; then
-                setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt"
+                setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" 0
                 return 1
             elif [[ -n "$lcg_release" ]]; then
                 # If there are multiple underscores, keep only up to the second one
@@ -569,8 +573,8 @@ main() {
                     lcg_release=$(echo "$lcg_release" | awk -F_ '{print $1"_"$2}')
                 fi
                 if [[ -d "$sft_top/$lcg_release/$packageName" ]]; then
-                setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt"
-                return 1
+                    setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" 0
+                    return 1
                 else
                     echo "Warning: Package $packageName is not available in $sft_top/$lcg_release"
                     echo -e "\t to be compatible with $ext_path_atlas"
