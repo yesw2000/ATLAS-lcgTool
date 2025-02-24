@@ -566,7 +566,7 @@ main() {
                 return 1
             elif [[ -n "$lcg_release" && -d "$sft_top/$lcg_release/$packageName" ]]; then
                 setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" 0
-                return 1
+                return $?
             elif [[ -n "$lcg_release" ]]; then
                 # If there are multiple underscores, keep only up to the second one
                 if [[ $(echo "$lcg_release" | grep -o "_" | wc -l) -gt 1 ]]; then
@@ -574,9 +574,11 @@ main() {
                 fi
                 if [[ -d "$sft_top/$lcg_release/$packageName" ]]; then
                     setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" 0
+                    return $?
                 else
                     echo "Warning: Package $packageName is not available in $sft_top/$lcg_release"
                     echo -e "\t to be compatible with $ext_path_atlas"
+                    return 1
                 fi
             fi
         fi
@@ -595,9 +597,11 @@ main() {
             elif [[ "$n_found" == "1" ]]; then
                 echo "Found one platform $platforms for the package $packageName, going to set up the env"
                 if [[ -n "$lcg_release" ]]; then
-                    setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt"
+                    setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" 0
+                    return $?
                 else
-                    setup_package_env "$packageName" "$version" "$os" "$compiler" "$opt"
+                    setup_package_env "$packageName" "$version" "$os" "$compiler" "$opt" 0
+                    return $?
                 fi
             else
                 echo $platforms | tr " " "\n"
@@ -609,8 +613,10 @@ main() {
                 
                 if [[ -n "$lcg_release" ]]; then
                     setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" "$check_deps"
+                    return $?
                 else
                     setup_package_env "$packageName" "$version" "$os" "$compiler" "$opt" "$check_deps"
+                    return $?
                 fi
             else
                 local fullpath=$(find_full_paths "$packageName" "$version" "$os" "$compiler" "$opt" | head -n1)
