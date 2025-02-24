@@ -565,7 +565,7 @@ main() {
                 echo "Warning: Package $packageName is already set up in $ext_path_atlas/$packageName"
                 return 1
             elif [[ -n "$lcg_release" && -d "$sft_top/$lcg_release/$packageName" ]]; then
-                setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt"
+                setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" 0
                 return 1
             elif [[ -n "$lcg_release" ]]; then
                 # If there are multiple underscores, keep only up to the second one
@@ -573,7 +573,7 @@ main() {
                     lcg_release=$(echo "$lcg_release" | awk -F_ '{print $1"_"$2}')
                 fi
                 if [[ -d "$sft_top/$lcg_release/$packageName" ]]; then
-                    setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt"
+                    setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" 0
                 else
                     echo "Warning: Package $packageName is not available in $sft_top/$lcg_release"
                     echo -e "\t to be compatible with $ext_path_atlas"
@@ -604,8 +604,8 @@ main() {
             fi
         else
             if [ $show_deps -eq 0 ] && [ $show_deps_list -eq 0 ]; then
-                local check_deps=0
-                [[ -n "$ext_path_atlas" ]] && check_deps=1
+                local check_deps=1
+                [[ -n "$ext_path_atlas" ]] && check_deps=0
                 
                 if [[ -n "$lcg_release" ]]; then
                     setup_package_env "$packageName" "$lcg_release" "$os" "$compiler" "$opt" "$check_deps"
